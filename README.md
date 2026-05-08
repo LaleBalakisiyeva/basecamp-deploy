@@ -4,6 +4,8 @@ Extension of Subject 1: adds **File Attachments**, **Discussion Threads**, **Mes
 
 > **Live deployment:** `https://your-app.railway.app` *(replace after deploying — see [Deployment](#deployment))*
 
+> **Note:** This project does not run on the Qwasar platform due to differences in the database system. The project is implemented using PostgreSQL, while Qwasar uses SQLite.
+
 ---
 
 ## New Features (Subject 2)
