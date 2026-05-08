@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <a href="/projects/<%= project.id %>" class="back-link">← Back to <%= project.name %></a>
+    <h1>💬 <%= thread.title %></h1>
+    <p class="page-meta">
+      Started by <a href="/users/<%= thread.creator.id %>"><%= thread.creator.username %></a>
+      · <%= new Date(thread.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+    </p>
+  </div>
+  <% if (isProjectAdmin) { %>
+    <div class="page-actions">
+      <a href="/projects/<%= project.id %>/threads/<%= thread.id %>/edit" class="btn btn-secondary">Edit</a>
+      <form action="/projects/<%= project.id %>/threads/<%= thread.id %>?_method=DELETE" method="POST"
+        onsubmit="return confirm('Delete this thread and all its messages?')">
+        <button type="submit" class="btn btn-danger">Delete Thread</button>
+      </form>
+    </div>
+  <% } %>
+</div>
+
+<!-- Messages -->
+<div class="messages-container">
+  <% if (thread.messages.length === 0) { %>
+    <div class="empty-state empty-state--sm">
+      <div class="empty-icon">🗨️</div>
+      <p>No messages yet. Be the first to say something!</p>
+    </div>
+  <% } else { %>
+    <% thread.messages.forEach(msg => { %>
+      <div class="message-card <%= msg.authorId === currentUserId ? 'message-card--own' : '' %>">
+        <div class="message-header">
+          <span class="avatar avatar--sm"><%= msg.author.username.charAt(0).toUpperCase() %></span>
+          <strong><a href="/users/<%= msg.author.id %>"><%= msg.author.username %></a></strong>
+          <span class="text-muted text-sm"><%= new Date(msg.createdAt).toLocaleString() %></span>
+          <% if (msg.updatedAt > msg.createdAt) { %><span class="text-muted text-sm">(edited)</span><% } %>
+          <% if (msg.authorId === currentUserId || isProjectAdmin) { %>
+            <div class="message-actions">
+              <a href="/projects/<%= project.id %>/threads/<%= thread.id %>/messages/<%= msg.id %>/edit" class="btn btn-ghost btn-xs">Edit</a>
+              <form action="/projects/<%= project.id %>/threads/<%= thread.id %>/messages/<%= msg.id %>?_method=DELETE" method="POST" style="display:inline">
+                <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+        <div class="message-body"><%= msg.body %></div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<!-- Post a message -->
+<% if (isProjectMember) { %>
+  <div class="reply-box">
+    <h3>Post a reply</h3>
+    <form action="/projects/<%= project.id %>/threads/<%= thread.id %>/messages" method="POST">
+      <div class="form-group">
+        <textarea name="body" rows="4" placeholder="Write your message here..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Post Message</button>
+    </form>
+  </div>
+<% } else { %>
+  <p class="text-muted" style="margin-top:1.5rem">You must be a project member to post messages.</p>
+<% } %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1>🛡 Admin Dashboard</h1>
+    <p class="page-subtitle">System overview and management</p>
+  </div>
+</div>
+
+<div class="admin-stats">
+  <div class="stat-card">
+    <div class="stat-number"><%= userCount %></div>
+    <div class="stat-label">Total Users</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number"><%= projectCount %></div>
+    <div class="stat-label">Total Projects</div>
+  </div>
+</div>
+
+<div class="admin-nav">
+  <a href="/admin/users" class="admin-nav-card">
+    <span class="admin-nav-icon">👥</span>
+    <h3>Manage Users</h3>
+    <p>View, promote, or remove users</p>
+  </a>
+  <a href="/admin/projects" class="admin-nav-card">
+    <span class="admin-nav-icon">📋</span>
+    <h3>All Projects</h3>
+    <p>View and manage all projects</p>
+  </a>
+</div>
+
+<div class="section">
+  <h2>Recent Users</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Projects</th>
+        <th>Joined</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(u => { %>
+        <tr>
+          <td><a href="/users/<%= u.id %>"><%= u.username %></a></td>
+          <td><%= u.email %></td>
+          <td><span class="badge <%= u.isAdmin ? 'badge--admin' : 'badge--user' %>"><%= u.isAdmin ? 'Admin' : 'User' %></span></td>
+          <td><%= u.projects.length %></td>
+          <td><%= new Date(u.createdAt).toLocaleDateString() %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <a href="/admin/users" class="btn btn-secondary" style="margin-top: 1rem">View All Users →</a>
+</div>
+
+<%- include('../partials/footer') %>

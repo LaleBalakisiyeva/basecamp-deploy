@@ -1,0 +1,41 @@
+<%- include('../partials/header') %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">⛺</div>
+      <h1>Create your account</h1>
+      <p>Join MyBasecamp and start managing your projects</p>
+    </div>
+
+    <form action="/auth/register" method="POST" class="auth-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required minlength="3" maxlength="50" placeholder="yourname" autocomplete="username" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6" placeholder="Min. 6 characters" autocomplete="new-password" />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" placeholder="Repeat password" autocomplete="new-password" />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">Create account</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="/auth/sign-in">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

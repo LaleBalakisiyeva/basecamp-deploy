@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <h1>My Projects</h1>
+    <p class="page-subtitle"><%= projects.length %> project<%= projects.length !== 1 ? 's' : '' %></p>
+  </div>
+  <a href="/projects/new" class="btn btn-primary">+ New Project</a>
+</div>
+
+<% if (projects.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon">📂</div>
+    <h2>No projects yet</h2>
+    <p>Create your first project to get started organizing your work.</p>
+    <a href="/projects/new" class="btn btn-primary">Create a project</a>
+  </div>
+<% } else { %>
+  <div class="projects-grid">
+    <% projects.forEach(project => { %>
+      <a href="/projects/<%= project.id %>" class="project-card" style="--project-color: <%= project.color %>">
+        <div class="project-color-bar"></div>
+        <div class="project-card-body">
+          <h3 class="project-name"><%= project.name %></h3>
+          <% if (project.description) { %>
+            <p class="project-description"><%= project.description %></p>
+          <% } %>
+          <div class="project-meta">
+            <span class="project-date">
+              Created <%= new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+            </span>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>
