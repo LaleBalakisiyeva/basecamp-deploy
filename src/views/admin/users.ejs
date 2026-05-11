@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <a href="/admin" class="back-link">← Dashboard</a>
+    <h1>Manage Users</h1>
+    <p class="page-subtitle"><%= users.length %> total users</p>
+  </div>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Projects</th>
+      <th>Joined</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(u => { %>
+      <tr>
+        <td>
+          <div class="user-cell">
+            <span class="avatar avatar--sm"><%= u.username.charAt(0).toUpperCase() %></span>
+            <a href="/users/<%= u.id %>"><%= u.username %></a>
+          </div>
+        </td>
+        <td><%= u.email %></td>
+        <td><span class="badge <%= u.isAdmin ? 'badge--admin' : 'badge--user' %>"><%= u.isAdmin ? 'Admin' : 'User' %></span></td>
+        <td><%= u.projects.length %></td>
+        <td><%= new Date(u.createdAt).toLocaleDateString() %></td>
+        <td>
+          <div class="action-buttons">
+            <% if (!u.isAdmin) { %>
+              <form action="/admin/users/<%= u.id %>/set-admin" method="POST" style="display:inline">
+                <button type="submit" class="btn btn-secondary btn-xs" title="Promote to Admin">Make Admin</button>
+              </form>
+            <% } else if (u.id !== currentUserId) { %>
+              <form action="/admin/users/<%= u.id %>/remove-admin" method="POST" style="display:inline" onsubmit="return confirm('Remove admin role?')">
+                <button type="submit" class="btn btn-warning btn-xs">Remove Admin</button>
+              </form>
+            <% } else { %>
+              <span class="text-muted text-sm">You</span>
+            <% } %>
+            <% if (u.id !== currentUserId) { %>
+              <form action="/users/<%= u.id %>?_method=DELETE" method="POST" style="display:inline" onsubmit="return confirm('Delete user <%= u.username %>? All their projects will be deleted too.')">
+                <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+              </form>
+            <% } %>
+          </div>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('../partials/footer') %>

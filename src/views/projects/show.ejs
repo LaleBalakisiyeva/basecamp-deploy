@@ -1,0 +1,208 @@
+<%- include('../partials/header') %>
+
+<div class="page-header" style="border-left: 4px solid <%= project.color %>; padding-left: 1.25rem;">
+  <div>
+    <a href="/projects" class="back-link">← Back to Projects</a>
+    <h1><%= project.name %></h1>
+    <% if (project.description) { %><p class="page-subtitle"><%= project.description %></p><% } %>
+    <p class="page-meta">
+      Owner: <a href="/users/<%= project.owner.id %>"><%= project.owner.username %></a>
+      · Created <%= new Date(project.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+    </p>
+  </div>
+  <% if (isProjectAdmin) { %>
+    <div class="page-actions">
+      <a href="/projects/<%= project.id %>/edit" class="btn btn-secondary">Edit</a>
+      <form action="/projects/<%= project.id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this project and all its data?')">
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+    </div>
+  <% } %>
+</div>
+
+<div class="project-tabs">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="threads">💬 Threads (<%= project.threads.length %>)</button>
+  <button class="tab-btn" data-tab="attachments">📎 Files (<%= project.attachments.length %>)</button>
+  <button class="tab-btn" data-tab="members">👥 Members (<%= project.memberships.length %>)</button>
+</div>
+
+<!-- OVERVIEW TAB -->
+<div class="tab-content active" id="tab-overview">
+  <div class="overview-grid">
+    <div class="overview-card">
+      <h3>Discussion Threads</h3>
+      <% if (project.threads.length === 0) { %>
+        <p class="text-muted text-sm">No threads yet.</p>
+      <% } else { %>
+        <ul class="activity-list">
+          <% project.threads.slice(0,5).forEach(t => { %>
+            <li>
+              <a href="/projects/<%= project.id %>/threads/<%= t.id %>">💬 <%= t.title %></a>
+              <span class="text-muted text-sm">by <%= t.creator.username %></span>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+    <div class="overview-card">
+      <h3>Recent Attachments</h3>
+      <% if (project.attachments.length === 0) { %>
+        <p class="text-muted text-sm">No files yet.</p>
+      <% } else { %>
+        <ul class="activity-list">
+          <% project.attachments.slice(0,5).forEach(a => { %>
+            <li>
+              <span class="format-badge format-<%= a.format %>"><%= a.format.toUpperCase() %></span>
+              <a href="/uploads/<%= a.filename %>" target="_blank"><%= a.originalName %></a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- THREADS TAB -->
+<div class="tab-content" id="tab-threads">
+  <div class="section-header">
+    <h2>Discussion Threads</h2>
+    <% if (isProjectAdmin) { %>
+      <a href="/projects/<%= project.id %>/threads/new" class="btn btn-primary btn-sm">+ New Thread</a>
+    <% } else { %>
+      <span class="text-muted text-sm">Only project admins can create threads</span>
+    <% } %>
+  </div>
+
+  <% if (project.threads.length === 0) { %>
+    <div class="empty-state empty-state--sm">
+      <div class="empty-icon">💬</div>
+      <p>No threads yet.<% if (isProjectAdmin) { %> Start a discussion!<% } %></p>
+    </div>
+  <% } else { %>
+    <div class="threads-list">
+      <% project.threads.forEach(thread => { %>
+        <a href="/projects/<%= project.id %>/threads/<%= thread.id %>" class="thread-card">
+          <div class="thread-card-icon">💬</div>
+          <div class="thread-card-content">
+            <h3><%= thread.title %></h3>
+            <span class="text-muted text-sm">Started by <%= thread.creator.username %> · <%= new Date(thread.createdAt).toLocaleDateString() %></span>
+          </div>
+          <span class="thread-arrow">→</span>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<!-- ATTACHMENTS TAB -->
+<div class="tab-content" id="tab-attachments">
+  <div class="section-header">
+    <h2>File Attachments</h2>
+  </div>
+
+  <% if (isProjectMember) { %>
+    <div class="upload-area">
+      <form action="/projects/<%= project.id %>/attachments" method="POST" enctype="multipart/form-data" class="upload-form">
+        <label class="upload-label">
+          <span class="upload-icon">📎</span>
+          <span class="upload-text">Choose a file to attach</span>
+          <input type="file" name="file" required accept=".png,.jpg,.jpeg,.gif,.pdf,.txt,.csv,.doc,.docx" />
+        </label>
+        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+      </form>
+      <p class="text-muted text-sm">Supported: PNG, JPG, GIF, PDF, TXT, CSV, DOC, DOCX · Max 10MB</p>
+    </div>
+  <% } %>
+
+  <% if (project.attachments.length === 0) { %>
+    <div class="empty-state empty-state--sm">
+      <div class="empty-icon">📂</div>
+      <p>No files attached yet.</p>
+    </div>
+  <% } else { %>
+    <div class="attachments-list">
+      <% project.attachments.forEach(att => { %>
+        <div class="attachment-row">
+          <span class="format-badge format-<%= att.format %>"><%= att.format.toUpperCase() %></span>
+          <div class="attachment-info">
+            <a href="/uploads/<%= att.filename %>" target="_blank" class="attachment-name"><%= att.originalName %></a>
+            <span class="text-muted text-sm">
+              <%= (att.size / 1024).toFixed(1) %> KB · Uploaded by <%= att.uploader.username %>
+              · <%= new Date(att.createdAt).toLocaleDateString() %>
+            </span>
+          </div>
+          <% if (att.uploadedById === currentUserId || isProjectAdmin) { %>
+            <form action="/projects/<%= project.id %>/attachments/<%= att.id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this file?')">
+              <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<!-- MEMBERS TAB -->
+<div class="tab-content" id="tab-members">
+  <div class="section-header">
+    <h2>Project Members</h2>
+  </div>
+
+  <% if (isProjectAdmin) { %>
+    <div class="add-member-form">
+      <form action="/projects/<%= project.id %>/members" method="POST" class="inline-form">
+        <input type="email" name="email" placeholder="member@email.com" required />
+        <select name="role">
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="submit" class="btn btn-secondary btn-sm">Add Member</button>
+      </form>
+    </div>
+  <% } %>
+
+  <div class="members-list">
+    <!-- Owner -->
+    <div class="member-row">
+      <span class="avatar avatar--sm"><%= project.owner.username.charAt(0).toUpperCase() %></span>
+      <a href="/users/<%= project.owner.id %>"><%= project.owner.username %></a>
+      <span class="badge badge--admin">Owner</span>
+    </div>
+    <% project.memberships.filter(m => m.userId !== project.ownerId).forEach(m => { %>
+      <div class="member-row">
+        <span class="avatar avatar--sm"><%= m.user.username.charAt(0).toUpperCase() %></span>
+        <a href="/users/<%= m.user.id %>"><%= m.user.username %></a>
+        <span class="badge <%= m.role === 'admin' ? 'badge--admin' : 'badge--user' %>"><%= m.role %></span>
+        <% if (isProjectAdmin) { %>
+          <form action="/projects/<%= project.id %>/members/<%= m.userId %>?_method=DELETE" method="POST" style="margin-left:auto" onsubmit="return confirm('Remove this member?')">
+            <button type="submit" class="btn btn-ghost btn-xs">Remove</button>
+          </form>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // File input label UX
+  document.querySelectorAll('input[type="file"]').forEach(input => {
+    input.addEventListener('change', () => {
+      const label = input.closest('label');
+      if (label && input.files[0]) {
+        label.querySelector('.upload-text').textContent = input.files[0].name;
+      }
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %>

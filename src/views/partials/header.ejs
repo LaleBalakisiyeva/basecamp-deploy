@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> — MyBasecamp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a class="nav-brand" href="<%= currentUserId ? '/projects' : '/' %>">
+        <span class="brand-icon">⛺</span>
+        <span class="brand-text">MyBasecamp</span>
+      </a>
+      <div class="nav-links">
+        <% if (currentUserId) { %>
+          <a href="/projects" class="nav-link">Projects</a>
+          <% if (isAdmin) { %>
+            <a href="/admin" class="nav-link nav-link--admin">Admin Panel</a>
+          <% } %>
+          <a href="/users/<%= currentUserId %>" class="nav-link">
+            <span class="avatar"><%= currentUsername.charAt(0).toUpperCase() %></span>
+            <%= currentUsername %>
+          </a>
+          <form action="/auth/sign-out" method="POST" style="display:inline">
+            <button type="submit" class="btn btn-ghost btn-sm">Sign Out</button>
+          </form>
+        <% } else { %>
+          <a href="/auth/sign-in" class="btn btn-ghost btn-sm">Sign In</a>
+          <a href="/auth/register" class="btn btn-primary btn-sm">Get Started</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <% if (flashSuccess && flashSuccess.length > 0) { %>
+    <div class="flash flash--success">
+      <span>✓</span> <%= flashSuccess[0] %>
+    </div>
+  <% } %>
+  <% if (flashError && flashError.length > 0) { %>
+    <div class="flash flash--error">
+      <span>✕</span> <%= flashError[0] %>
+    </div>
+  <% } %>
+
+  <main class="main-content">

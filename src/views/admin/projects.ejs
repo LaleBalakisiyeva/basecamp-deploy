@@ -1,0 +1,46 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <a href="/admin" class="back-link">← Dashboard</a>
+    <h1>All Projects</h1>
+    <p class="page-subtitle"><%= projects.length %> total projects</p>
+  </div>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Owner</th>
+      <th>Description</th>
+      <th>Created</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% projects.forEach(project => { %>
+      <tr>
+        <td>
+          <div class="project-name-cell">
+            <span class="color-dot" style="background: <%= project.color %>"></span>
+            <a href="/projects/<%= project.id %>"><%= project.name %></a>
+          </div>
+        </td>
+        <td><a href="/users/<%= project.owner.id %>"><%= project.owner.username %></a></td>
+        <td class="text-muted text-sm"><%= project.description ? project.description.substring(0, 60) + (project.description.length > 60 ? '…' : '') : '—' %></td>
+        <td><%= new Date(project.createdAt).toLocaleDateString() %></td>
+        <td>
+          <div class="action-buttons">
+            <a href="/projects/<%= project.id %>/edit" class="btn btn-secondary btn-xs">Edit</a>
+            <form action="/projects/<%= project.id %>?_method=DELETE" method="POST" style="display:inline" onsubmit="return confirm('Delete project?')">
+              <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('../partials/footer') %>
