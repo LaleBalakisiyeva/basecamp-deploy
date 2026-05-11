@@ -1,8 +1,11 @@
 # ⛺ MyBasecamp — Subject 2
 
 Extension of Subject 1: adds **File Attachments**, **Discussion Threads**, **Messages**, and **Project Membership** management.
-
+HEAD
 > **Live deployment:** https://basecamp-deploy-production.up.railway.app
+
+> **Live deployment:** `https://your-app.railway.app` *(replace after deploying — see [Deployment](#deployment))*
+ a27ad7f1f478de321a57462f7da2af504cd4e6f8
 
 > **Note:** This project does not run on the Qwasar platform due to differences in the database system. The project is implemented using PostgreSQL, while Qwasar uses SQLite.
 
