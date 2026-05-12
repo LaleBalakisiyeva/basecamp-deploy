@@ -63,7 +63,7 @@ app.use((err, req, res, next) => {
 const start = async () => {
   try {
     await syncDatabase();
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`\n🚀 MyBasecamp running at http://localhost:${PORT}`);
       console.log(`   Environment: ${process.env.NODE_ENV || 'development'}\n`);
     });
