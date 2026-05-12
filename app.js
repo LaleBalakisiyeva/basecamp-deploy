@@ -64,7 +64,7 @@ const start = async () => {
   try {
     await syncDatabase();
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`\n🚀 MyBasecamp running at http://localhost:${PORT}`);
+     console.log(`\n🚀 MyBasecamp running on port ${PORT}`);
       console.log(`   Environment: ${process.env.NODE_ENV || 'development'}\n`);
     });
   } catch (err) {
